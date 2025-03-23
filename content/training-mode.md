@@ -8,11 +8,10 @@ The training mode in Cosmic Kombat serves as both an educational tool and a labo
 2. **Depth**: Advanced players should have tools for precise practice
 3. **Analysis**: Data-driven feedback to measure improvement
 
-## Feature Set
+## Advanced Systems
 
-### Basic Training Tools
+For detailed information, see the following documents:
 
-- **Frame Data Display**: Show startup, active, and recovery frames for all moves
-- **Hitbox Visualization**: Toggle display of hit/hurt boxes in real-time
-- **Input Display**: On-screen indicators showing button presses
-- **Move List**: Interactive move database with video examples
+- [Frame Data Visualization](/content/frame-data.md)
+- [Input Buffer Simulation](/content/input-buffer.md)
+- [Analytics Dashboard](/content/analytics-dashboard.md)
