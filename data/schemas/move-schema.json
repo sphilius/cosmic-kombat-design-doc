@@ -1,0 +1,438 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cosmic Kombat Move Data Schema",
+  "description": "JSON schema for character move/attack data files",
+  "type": "object",
+  "required": ["character", "moves"],
+  "properties": {
+    "character": {
+      "type": "string",
+      "description": "Character name this moveset belongs to",
+      "examples": ["ryn", "kira"]
+    },
+    "moves": {
+      "type": "array",
+      "description": "Array of all moves for this character",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "input", "type", "frame_data", "properties"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique move identifier",
+            "pattern": "^[A-Z0-9_]+$",
+            "examples": ["LA1", "MA1", "SP1", "ULTRA"]
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name of the move",
+            "examples": ["Quick Jab", "Rushing Charge", "Orbital Strike"]
+          },
+          "input": {
+            "type": "string",
+            "description": "Input command (notation)",
+            "examples": ["L", "236+S", "623+S", "ULTRA"]
+          },
+          "type": {
+            "type": "string",
+            "description": "Move category",
+            "enum": [
+              "light_attack",
+              "medium_attack",
+              "heavy_attack",
+              "special_move",
+              "ultimate",
+              "throw",
+              "movement"
+            ]
+          },
+          "archetype_role": {
+            "type": "string",
+            "description": "What role this move serves",
+            "examples": ["Poke", "Anti-air", "Launcher", "Reversal", "Zoning"]
+          },
+          "frame_data": {
+            "type": "object",
+            "description": "Frame timing data",
+            "required": ["startup", "active", "recovery"],
+            "properties": {
+              "startup": {
+                "type": "integer",
+                "description": "Frames before hitbox becomes active",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "active": {
+                "type": "integer",
+                "description": "Frames hitbox is active",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "recovery": {
+                "type": "integer",
+                "description": "Frames after active before character can act",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "on_hit": {
+                "type": "integer",
+                "description": "Frame advantage on hit (can be negative)"
+              },
+              "on_block": {
+                "type": "integer",
+                "description": "Frame advantage on block (can be negative)"
+              },
+              "total": {
+                "type": "integer",
+                "description": "Total move duration (startup + active + recovery)",
+                "minimum": 3
+              },
+              "landing_recovery": {
+                "type": "integer",
+                "description": "Additional recovery frames if landing during move (air moves)"
+              }
+            }
+          },
+          "properties": {
+            "type": "object",
+            "description": "Move properties",
+            "required": ["damage_health", "damage_percentage"],
+            "properties": {
+              "damage_health": {
+                "type": "number",
+                "description": "Damage to health bar",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "damage_percentage": {
+                "type": "number",
+                "description": "Damage to percentage meter",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "knockback": {
+                "type": "number",
+                "description": "Base knockback distance in units",
+                "minimum": 0,
+                "maximum": 10
+              },
+              "knockback_angle": {
+                "type": "number",
+                "description": "Knockback angle in degrees (0=right, 90=up)",
+                "minimum": 0,
+                "maximum": 360
+              },
+              "hitstun": {
+                "type": "integer",
+                "description": "Frames opponent is in hitstun",
+                "minimum": 0
+              },
+              "blockstun": {
+                "type": "integer",
+                "description": "Frames opponent is in blockstun",
+                "minimum": 0
+              },
+              "range": {
+                "type": "number",
+                "description": "Move reach distance in units",
+                "minimum": 0,
+                "maximum": 15
+              },
+              "multi_hit": {
+                "type": "boolean",
+                "description": "Does move hit multiple times",
+                "default": false
+              },
+              "hit_count": {
+                "type": "integer",
+                "description": "Number of hits (if multi_hit is true)",
+                "minimum": 2,
+                "maximum": 20
+              }
+            }
+          },
+          "hitbox": {
+            "type": "object",
+            "description": "Hitbox definition",
+            "required": ["shape"],
+            "properties": {
+              "shape": {
+                "type": "string",
+                "description": "Hitbox collision shape",
+                "enum": ["circle", "rectangle", "capsule"]
+              },
+              "radius": {
+                "type": "number",
+                "description": "Radius for circle shape",
+                "minimum": 0.1,
+                "maximum": 5.0
+              },
+              "width": {
+                "type": "number",
+                "description": "Width for rectangle/capsule",
+                "minimum": 0.1,
+                "maximum": 10.0
+              },
+              "height": {
+                "type": "number",
+                "description": "Height for rectangle/capsule",
+                "minimum": 0.1,
+                "maximum": 10.0
+              },
+              "offset_x": {
+                "type": "number",
+                "description": "Horizontal offset from character center",
+                "default": 0
+              },
+              "offset_y": {
+                "type": "number",
+                "description": "Vertical offset from character center",
+                "default": 0
+              },
+              "active_frames": {
+                "type": "array",
+                "description": "Frame numbers when hitbox is active (if not continuous)",
+                "items": {
+                  "type": "integer"
+                },
+                "examples": [[5, 6], [8, 9, 10]]
+              }
+            }
+          },
+          "cancel_options": {
+            "type": "array",
+            "description": "Moves this can cancel into",
+            "items": {
+              "type": "string"
+            },
+            "examples": [["LA2", "LA3", "MA1", "SP1"]]
+          },
+          "cancel_window": {
+            "type": "array",
+            "description": "Frame window for canceling [start, end]",
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "examples": [[6, 15]]
+          },
+          "special_properties": {
+            "type": "object",
+            "description": "Special move properties",
+            "properties": {
+              "invincibility": {
+                "type": "array",
+                "description": "Invincibility frame window [start, end]",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "armor": {
+                "type": "array",
+                "description": "Armor frame window [start, end]",
+                "items": {
+                  "type": "integer"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "armor_hits": {
+                "type": "integer",
+                "description": "Number of hits armor can absorb",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "projectile": {
+                "type": "boolean",
+                "description": "Is this move a projectile",
+                "default": false
+              },
+              "projectile_speed": {
+                "type": "number",
+                "description": "Projectile travel speed (units/frame)"
+              },
+              "projectile_durability": {
+                "type": "integer",
+                "description": "Hits projectile can take before destroyed",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "unblockable": {
+                "type": "boolean",
+                "description": "Cannot be blocked",
+                "default": false
+              },
+              "overhead": {
+                "type": "boolean",
+                "description": "Must be blocked standing",
+                "default": false
+              },
+              "low": {
+                "type": "boolean",
+                "description": "Must be blocked crouching",
+                "default": false
+              },
+              "command_grab": {
+                "type": "boolean",
+                "description": "Unblockable throw",
+                "default": false
+              },
+              "wall_bounce": {
+                "type": "boolean",
+                "description": "Causes wall bounce on hit",
+                "default": false
+              },
+              "ground_bounce": {
+                "type": "boolean",
+                "description": "Causes ground bounce on hit",
+                "default": false
+              },
+              "launches": {
+                "type": "boolean",
+                "description": "Launches opponent into air",
+                "default": false
+              },
+              "knockdown": {
+                "type": "boolean",
+                "description": "Causes knockdown",
+                "default": false
+              },
+              "cinematic": {
+                "type": "boolean",
+                "description": "Has cinematic camera (ultimates)",
+                "default": false
+              }
+            }
+          },
+          "animation": {
+            "type": "object",
+            "description": "Animation data",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Animation name/path",
+                "examples": ["attack_la1", "special_rushing_charge"]
+              },
+              "speed": {
+                "type": "number",
+                "description": "Animation playback speed multiplier",
+                "minimum": 0.1,
+                "maximum": 3.0,
+                "default": 1.0
+              }
+            }
+          },
+          "audio": {
+            "type": "object",
+            "description": "Audio for this move",
+            "properties": {
+              "sfx": {
+                "type": "string",
+                "description": "Sound effect name/path",
+                "examples": ["whoosh_light", "impact_heavy"]
+              },
+              "voice": {
+                "type": "string",
+                "description": "Voice clip name/path",
+                "examples": ["rising", "striker_fury"]
+              }
+            }
+          },
+          "vfx": {
+            "type": "object",
+            "description": "Visual effects",
+            "properties": {
+              "trail": {
+                "type": "string",
+                "description": "Attack trail effect name",
+                "examples": ["red_trail", "purple_energy"]
+              },
+              "impact": {
+                "type": "string",
+                "description": "Impact effect name",
+                "examples": ["hit_spark_red", "explosion_purple"]
+              },
+              "charge_effect": {
+                "type": "string",
+                "description": "Charging effect (if chargeable)"
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "description": "Design metadata",
+            "properties": {
+              "difficulty": {
+                "type": "string",
+                "enum": ["Easy", "Medium", "Hard"],
+                "description": "Execution difficulty"
+              },
+              "usage_notes": {
+                "type": "string",
+                "description": "When/how to use this move"
+              },
+              "balance_notes": {
+                "type": "string",
+                "description": "Balance considerations"
+              }
+            }
+          }
+        }
+      }
+    },
+    "combos": {
+      "type": "array",
+      "description": "Pre-defined combo routes",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "examples": ["BnB", "Corner Carry", "Maximum Damage"]
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": ["Beginner", "Intermediate", "Advanced", "Expert"]
+          },
+          "sequence": {
+            "type": "array",
+            "description": "Move IDs in order",
+            "items": {
+              "type": "string"
+            },
+            "examples": [["LA1", "LA2", "MA1", "HA1"]]
+          },
+          "total_damage_health": {
+            "type": "number"
+          },
+          "total_damage_percentage": {
+            "type": "number"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "description": "Metadata",
+      "properties": {
+        "version": {
+          "type": "string",
+          "examples": ["1.0"]
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "designer": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

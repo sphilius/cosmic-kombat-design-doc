@@ -1,0 +1,329 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cosmic Kombat Character Data Schema",
+  "description": "JSON schema for character stat data files",
+  "type": "object",
+  "required": ["name", "tier", "archetype", "stats", "tier_modifiers", "movement"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Character internal name (lowercase, no spaces)",
+      "pattern": "^[a-z_]+$",
+      "examples": ["ryn", "kira"]
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Character display name with title",
+      "examples": ["Ryn \"The Striker\"", "Kira \"The Spellblade\""]
+    },
+    "tier": {
+      "type": "integer",
+      "description": "VSBattles tier (0-11, where 11 is weakest)",
+      "minimum": 0,
+      "maximum": 11
+    },
+    "archetype": {
+      "type": "string",
+      "description": "Character fighting archetype",
+      "enum": ["All-Rounder", "Rushdown", "Zoner", "Grappler", "Aerial", "Technical", "Tank"]
+    },
+    "difficulty": {
+      "type": "string",
+      "description": "Player skill level required",
+      "enum": ["Beginner", "Intermediate", "Advanced", "Expert"]
+    },
+    "stats": {
+      "type": "object",
+      "description": "Base character statistics",
+      "required": ["health", "weight", "walk_speed", "dash_speed", "jump_height", "air_control"],
+      "properties": {
+        "health": {
+          "type": "number",
+          "description": "Maximum health (HP bar)",
+          "minimum": 50,
+          "maximum": 150,
+          "default": 100
+        },
+        "weight": {
+          "type": "number",
+          "description": "Character weight (affects knockback received) 1-10",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 5
+        },
+        "walk_speed": {
+          "type": "number",
+          "description": "Ground walk speed in units/second",
+          "minimum": 1.0,
+          "maximum": 10.0,
+          "default": 5.0
+        },
+        "dash_speed": {
+          "type": "number",
+          "description": "Dash speed in units/second",
+          "minimum": 1.0,
+          "maximum": 15.0,
+          "default": 7.0
+        },
+        "jump_height": {
+          "type": "number",
+          "description": "Jump height in units",
+          "minimum": 1.0,
+          "maximum": 10.0,
+          "default": 5.0
+        },
+        "air_control": {
+          "type": "number",
+          "description": "Air movement control (1-10)",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 5
+        }
+      }
+    },
+    "tier_modifiers": {
+      "type": "object",
+      "description": "Tier-based multipliers",
+      "required": ["hitbox_size", "knockback_modifier", "damage_scaling"],
+      "properties": {
+        "hitbox_size": {
+          "type": "number",
+          "description": "Hitbox size multiplier (1.0 for Tier 11, scales up)",
+          "minimum": 0.5,
+          "maximum": 2.0,
+          "default": 1.0
+        },
+        "knockback_modifier": {
+          "type": "number",
+          "description": "Knockback dealt multiplier",
+          "minimum": 0.5,
+          "maximum": 2.0,
+          "default": 1.0
+        },
+        "damage_scaling": {
+          "type": "number",
+          "description": "Damage output multiplier",
+          "minimum": 0.5,
+          "maximum": 2.0,
+          "default": 1.0
+        },
+        "frame_data_modifier": {
+          "type": "string",
+          "description": "Description of how tier affects frame data"
+        }
+      }
+    },
+    "movement": {
+      "type": "object",
+      "description": "Movement ability properties",
+      "required": ["dash_duration", "dash_distance", "air_jumps"],
+      "properties": {
+        "dash_duration": {
+          "type": "integer",
+          "description": "Dash duration in frames",
+          "minimum": 10,
+          "maximum": 40
+        },
+        "dash_distance": {
+          "type": "number",
+          "description": "Dash travel distance in units",
+          "minimum": 1.0,
+          "maximum": 5.0
+        },
+        "dash_recovery": {
+          "type": "integer",
+          "description": "Dash recovery frames",
+          "minimum": 4,
+          "maximum": 20
+        },
+        "backdash_duration": {
+          "type": "integer",
+          "description": "Backdash duration in frames",
+          "minimum": 15,
+          "maximum": 40
+        },
+        "backdash_distance": {
+          "type": "number",
+          "description": "Backdash travel distance in units",
+          "minimum": 1.5,
+          "maximum": 5.0
+        },
+        "backdash_invincibility": {
+          "type": "array",
+          "description": "Invincibility frame window [start, end]",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "examples": [[1, 8]]
+        },
+        "air_jumps": {
+          "type": "integer",
+          "description": "Number of air jumps (0, 1, or 2)",
+          "minimum": 0,
+          "maximum": 2,
+          "default": 0
+        },
+        "air_dash_enabled": {
+          "type": "boolean",
+          "description": "Can character air dash",
+          "default": false
+        },
+        "air_dash_duration": {
+          "type": "integer",
+          "description": "Air dash duration in frames (if enabled)",
+          "minimum": 10,
+          "maximum": 30
+        },
+        "air_dash_distance": {
+          "type": "number",
+          "description": "Air dash travel distance in units (if enabled)",
+          "minimum": 1.0,
+          "maximum": 5.0
+        }
+      }
+    },
+    "blocking": {
+      "type": "object",
+      "description": "Blocking properties",
+      "properties": {
+        "air_block_enabled": {
+          "type": "boolean",
+          "description": "Can character block in air",
+          "default": false
+        },
+        "pushback_distance": {
+          "type": "number",
+          "description": "Distance pushed back when blocking (units)",
+          "minimum": 0.1,
+          "maximum": 1.0,
+          "default": 0.3
+        }
+      }
+    },
+    "throws": {
+      "type": "object",
+      "description": "Throw properties",
+      "properties": {
+        "forward_throw": {
+          "type": "object",
+          "properties": {
+            "startup": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 10
+            },
+            "range": {
+              "type": "number",
+              "minimum": 0.8,
+              "maximum": 2.0
+            },
+            "damage_health": {
+              "type": "number"
+            },
+            "damage_percentage": {
+              "type": "number"
+            },
+            "knockback_distance": {
+              "type": "number"
+            }
+          }
+        },
+        "back_throw": {
+          "type": "object",
+          "properties": {
+            "startup": {
+              "type": "integer"
+            },
+            "range": {
+              "type": "number"
+            },
+            "damage_health": {
+              "type": "number"
+            },
+            "damage_percentage": {
+              "type": "number"
+            },
+            "knockback_distance": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "visuals": {
+      "type": "object",
+      "description": "Visual and aesthetic properties",
+      "properties": {
+        "sprite_scale": {
+          "type": "number",
+          "description": "Sprite scale multiplier",
+          "minimum": 0.5,
+          "maximum": 2.0,
+          "default": 1.0
+        },
+        "color_primary": {
+          "type": "string",
+          "description": "Primary color (hex)",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "examples": ["#2B2B2B", "#8B5CF6"]
+        },
+        "color_secondary": {
+          "type": "string",
+          "description": "Secondary color (hex)",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "examples": ["#B91C1C", "#C0C0C0"]
+        },
+        "color_accent": {
+          "type": "string",
+          "description": "Accent color (hex)",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "vfx_color": {
+          "type": "string",
+          "description": "VFX primary color (hex)",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "examples": ["#EF4444", "#A78BFA"]
+        }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "description": "Audio asset paths",
+      "properties": {
+        "voice_clips_path": {
+          "type": "string",
+          "description": "Path to voice clips folder"
+        },
+        "sfx_path": {
+          "type": "string",
+          "description": "Path to SFX folder"
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "description": "Metadata",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$",
+          "examples": ["1.0", "1.1"]
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date",
+          "examples": ["2025-10-24"]
+        },
+        "designer": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Design notes or changelog"
+        }
+      }
+    }
+  }
+}
